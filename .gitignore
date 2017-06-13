@@ -1,4 +1,4 @@
-#Linux
+# Linux
 .directory
 
 # Byte-compiled / optimized / DLL files
@@ -161,3 +161,11 @@ typings/
 
 # dotenv environment variables file
 .env
+
+# Certificates
+*.pem
++!example.pem
+ *.key
++!example.key
++*.crt
++!example-ca.crt
