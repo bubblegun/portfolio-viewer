@@ -1,38 +1,43 @@
+import re
 import scrapy
 
 from swiss_fund_data.items import SwissFundDataItem
 
 class SwissFundDataSpider(scrapy.Spider):
     name = "SwissFundData"
-    
-    isin = 'CH0111762537'
-    #isin = 'CH0111XXXXX'
-    
-    #return value?
 
-    #def __init__(self, isin=None, *args, **kwargs):
-        #super(FundSpider, self).__init__(*args, **kwargs)
-        #self.start_urls = ['https://www.swissfunddata.ch/sfdpub/de/funds/overview?text=%s' % isin]
+    def __init__(self, isin=None, *args, **kwargs):
+        super(SwissFundDataSpider, self).__init__(*args, **kwargs)
+        self.isin   = isin
+        self.url    = 'https://www.swissfunddata.ch/sfdpub/de/funds/overview?text=%s' % isin
 
     def start_requests(self):
-        urls = [
-            'https://www.swissfunddata.ch/sfdpub/de/funds/overview?text=%s' % self.isin
-        ]
-        for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse, cookies={'sfdpub-disclaimer': 'private'})
+        yield scrapy.Request(url=self.url, callback=self.parse, cookies={'sfdpub-disclaimer': 'private'})
 
     def parse(self, response):
         self.logger.info('Parse function called on %s', response.url)
         
         item            = SwissFundDataItem()
-        
+        item['isin']    = self.isin
+        item['status']  = 'OK'
+
         try:
             url         = response.xpath('//div[@id="tab-1"]/table/tbody/tr/td[2]/a/@href').extract()[0]
-            url         = response.urljoin(url)
-            item['url'] =  url
-            self.logger.info(url)
-            
+            item['url'] = response.urljoin(url)
+
+            self.logger.info('ISIN %s found' % self.isin)
+
+            try:
+                item['id']  = re.findall('/(\d+)', url)[0]
+                self.logger.info('ID %s extracted' % item['id'])
+            except IndexError:
+                item['status'] = 'NOK'
+                self.logger.info('Couldn\'t extract ID')
+
             yield item
-            
+
         except IndexError:
+            item['status'] = 'NOK'
             self.logger.info('ISIN %s not found' % self.isin)
+
+            yield item

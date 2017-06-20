@@ -1,4 +1,6 @@
 Portfolio Viewer
 ================
 
-Initial commit
+# Data Provider
+## Swiss Fund Data
+scrapy crawl SwissFundData -a isin=CHXXXXXXXXXX

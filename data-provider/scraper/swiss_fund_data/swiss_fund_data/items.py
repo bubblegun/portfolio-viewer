@@ -11,4 +11,7 @@ import scrapy
 class SwissFundDataItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    url = scrapy.Field()
+    isin    = scrapy.Field()
+    url     = scrapy.Field()
+    id      = scrapy.Field()
+    status  = scrapy.Field()
