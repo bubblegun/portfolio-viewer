@@ -169,3 +169,7 @@ typings/
 +!example.key
 +*.crt
 +!example-ca.crt
+
+#Config files
+*/config/*
+!*/config/*.example.json

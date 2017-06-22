@@ -13,6 +13,7 @@
   "author": "bubblegun",
   "license": "MIT",
   "dependencies": {
+    "config": "^1.26.1",
     "express": "^4.15.3"
   }
 }
