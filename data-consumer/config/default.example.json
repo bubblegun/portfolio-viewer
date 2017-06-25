@@ -1,5 +1,13 @@
 {
-    "sslConfig": {
-        "password": ""
+    "config": {
+        "sslConfig": {
+            "password": ""
+        },
+        "mySQL": {
+            "server": "localhost",
+            "user": "",
+            "password": "",
+            "database": ""
+        }
     }
 }

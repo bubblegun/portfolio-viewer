@@ -162,6 +162,9 @@ typings/
 # dotenv environment variables file
 .env
 
+# Visual Studio Code
+.vscode/
+
 # Certificates
 *.pem
 +!example.pem
