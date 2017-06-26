@@ -1,41 +1,46 @@
 'use strict';
 
 const config    = require('config');
+const log4js    = require('log4js');
 const mysql     = require('mysql');
 const express   = require('express');
+const logger    = log4js.getLogger();
 const app       = express();
 
+if (!config.has('config')) {
+    console.log('Can\'t find configuration file. Aborting...!');
+    return;
+}
+
+logger.info('NODE_ENV: '        + config.util.getEnv('NODE_ENV'));
+logger.info('NODE_CONFIG_DIR: ' + config.util.getEnv('NODE_CONFIG_DIR'));
+
 var connection = mysql.createConnection({
-  host     : config.get('config.mySQL.server'),
-  user     : config.get('config.mySQL.user'),
-  password : config.get('config.mySQL.password'),
-  database : config.get('config.mySQL.database')
+    host     : config.get('config.mySQL.server'),
+    user     : config.get('config.mySQL.user'),
+    password : config.get('config.mySQL.password'),
+    database : config.get('config.mySQL.database')
 });
 
 connection.connect(function(err) {
-  if (err) {
-    console.error('error connecting: ' + err.stack);
-    return;
-  }
+    if (err) {
+        logger.error('Error connecting: ' + err.stack); //TODO: No stack in PROD
+        return;
+    }
 
-  console.log('connected as id ' + connection.threadId);
+    logger.info('Connected as id ' + connection.threadId);
 });
 
 connection.query('SELECT * FROM fund',function(err,rows){
-  if(err) throw err;
+    if(err) throw err;
 
-  console.log('Data received from Db:\n');
-  console.log(rows);
+    logger.info('Data received from Db:');
+    logger.info(rows);
 });
 
-if (config.has('config')) {
-    var sslPW = config.get('config.sslConfig.password');
-} else {
-    console.log('Can\'t find configuration file!');
-}
-
-console.log('NODE_ENV: '        + config.util.getEnv('NODE_ENV'));
-console.log('NODE_CONFIG_DIR: ' + config.util.getEnv('NODE_CONFIG_DIR'));
+connection.end(function(err) {
+    logger.info('Disconnected from DB!');
+});
 
 
 app.get('/', function (req, res) {
@@ -43,5 +48,5 @@ app.get('/', function (req, res) {
 });
 
 app.listen(3000, function () {
-    console.log('Example app listening on port 3000!');
+    logger.info('App listening on port 3000!');
 });
