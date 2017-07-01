@@ -15,3 +15,12 @@ exports.get = function(req, res, next) {
     res.send('hello: ' + req.params.isin);
     return next();
 };
+
+exports.post = function(req, res, next) {
+    logger.info('POST ROUTE');
+
+    //logger.info(req.body);
+
+    res.send('success for: ' + req.params.isin);
+    return next();
+};

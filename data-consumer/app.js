@@ -17,7 +17,7 @@ if (!config.has('config')) {
     return;
 }
 
-//TODO: Remove Express
+//TODO: SSL
 //TODO: Sequilize?
 //TODO: restify-validator
 
@@ -27,8 +27,18 @@ var server = restify.createServer({
     name        : 'DataConsumer',
 });
 
+server.use(restify.bodyParser({ mapParams: false }));
+
+// server.pre(function(req, res, next) {
+//     //log access
+//     next();
+// });
+
+
 server.get('/api/isin/',        isin.get);
 server.get('/api/isin/:isin',   isin.get);
+
+server.post('/api/isin/:isin',  isin.post);
 
 server.listen(3000, function() {
     logger.info('%s listening at %s', server.name, server.url);
