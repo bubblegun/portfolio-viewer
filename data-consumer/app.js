@@ -3,50 +3,33 @@
 const config    = require('config');
 const log4js    = require('log4js');
 const mysql     = require('mysql');
-const express   = require('express');
+const restify   = require('restify');
+
+const isin      = require('./routes/isin');
+
 const logger    = log4js.getLogger();
-const app       = express();
+
+logger.info('NODE_ENV: '        + config.util.getEnv('NODE_ENV'));
+logger.info('NODE_CONFIG_DIR: ' + config.util.getEnv('NODE_CONFIG_DIR'));
 
 if (!config.has('config')) {
     console.log('Can\'t find configuration file. Aborting...!');
     return;
 }
 
-logger.info('NODE_ENV: '        + config.util.getEnv('NODE_ENV'));
-logger.info('NODE_CONFIG_DIR: ' + config.util.getEnv('NODE_CONFIG_DIR'));
+//TODO: Remove Express
+//TODO: Sequilize?
+//TODO: restify-validator
 
-var connection = mysql.createConnection({
-    host     : config.get('config.mySQL.server'),
-    user     : config.get('config.mySQL.user'),
-    password : config.get('config.mySQL.password'),
-    database : config.get('config.mySQL.database')
+var server = restify.createServer({
+    //certificate : fs.readFileSync('path/to/server/certificate'),
+    //key         : fs.readFileSync('path/to/server/key'),
+    name        : 'DataConsumer',
 });
 
-connection.connect(function(err) {
-    if (err) {
-        logger.error('Error connecting: ' + err.stack); //TODO: No stack in PROD
-        return;
-    }
+server.get('/api/isin/',        isin.get);
+server.get('/api/isin/:isin',   isin.get);
 
-    logger.info('Connected as id ' + connection.threadId);
-});
-
-connection.query('SELECT * FROM fund',function(err,rows){
-    if(err) throw err;
-
-    logger.info('Data received from Db:');
-    logger.info(rows);
-});
-
-connection.end(function(err) {
-    logger.info('Disconnected from DB!');
-});
-
-
-app.get('/', function (req, res) {
-    res.send('Hello World!');
-});
-
-app.listen(3000, function () {
-    logger.info('App listening on port 3000!');
+server.listen(3000, function() {
+    logger.info('%s listening at %s', server.name, server.url);
 });

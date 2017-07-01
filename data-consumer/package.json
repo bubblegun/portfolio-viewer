@@ -14,8 +14,8 @@
   "license": "MIT",
   "dependencies": {
     "config": "^1.26.1",
-    "express": "^4.15.3",
     "log4js": "^1.1.1",
-    "mysql": "^2.13.0"
+    "mysql": "^2.13.0",
+    "restify": "^4.3.0"
   }
 }
